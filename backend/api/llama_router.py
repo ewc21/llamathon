@@ -12,13 +12,18 @@ from schema.llama import LlamaModel
 
 llama_router = APIRouter()
 
-@llama_router.get("/chat")
-def login(form_data: LlamaModel, db: Session = Depends(get_db)):
-    client = LlamaStackClient(base_url=f"http://localhost:8321")
+@llama_router.post("/chat")
+# TODO: Add authenitcation
+def chat(form_data: LlamaModel, db: Session = Depends(get_db)):
+    client = LlamaStackClient(base_url=f"http://localhost:11434")
 
     models = client.models.list()
-    llm = next(m for m in models if m.model_type == "llm")
-    model_id = llm.identifier
+        
+    # llm = next(m for m in models if m.type == "llm")
+    llm = models[0]
+    model_id = llm.id
+    
+    print(llm.dict())
 
     agent = Agent(client, model=model_id, instructions="You are a helpful assistant.")
 
@@ -31,4 +36,4 @@ def login(form_data: LlamaModel, db: Session = Depends(get_db)):
     )
     print("agent>", response.output_message.content)
     
-    return {response.output_message.content}
+    return {"response": response.output_message.content}
