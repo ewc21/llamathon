@@ -10,7 +10,7 @@ const LandingPage = () => {
       <h1 className="title">LlamaNutrition</h1>
       <img src={LlamaLogo} alt="Llama Logo" className="llama-logo" />
       <div className="button-group">
-        <button className="action-button" onClick={() => navigate("/app")}>
+        <button className="action-button" onClick={() => navigate("/login")}>
           Login
         </button>
         <button className="action-button">Create Account</button>
