@@ -6,6 +6,21 @@ services:
   #     ports:
   #       - "11434:11434"
   #     tty: true
+  llama:
+    image: llamastack/distribution-ollama
+    container_name: llama-stack
+    restart: always
+    ports:
+      - "8321:8321"
+    volumes:
+      - ~/.llama:/root/.llama
+    environment:
+      - INFERENCE_MODEL=llama3.2:3b
+      - LLAMA_STACK_PORT=8321
+      - OLLAMA_URL=http://host.docker.internal:11434
+    depends_on:
+      - backend
+  
   backend:
     build:
       context: .
@@ -37,7 +52,7 @@ services:
       dockerfile: Dockerfile.frontend
     container_name: llamathon-frontend
     ports:
-      - "3000:3000"
+      - "5173:5173"
     volumes:
       - ./frontend:/app
       - frontend_node_modules:/app/node_modules
