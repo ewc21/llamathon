@@ -1,0 +1,73 @@
+/* filepath: /Users/william/Desktop/llamathon/frontend/src/Styles/FoodItem.css */
+.food-item {
+    background-color: #505050;
+    border-radius: 4px;
+    margin-bottom: 5px;
+    overflow: hidden; /* Contain details */
+  }
+  
+  .food-item-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    cursor: pointer;
+    background-color: #555; /* Slightly different for clickable area */
+  }
+   .food-item-summary:hover {
+      background-color: #606060;
+   }
+  
+  .food-name {
+    font-weight: bold;
+    color: #f0f0f0;
+    flex-basis: 40%; /* Adjust as needed */
+    margin-right: 10px;
+  }
+  
+  .food-macros-summary {
+    display: flex;
+    gap: 15px; /* Space between C, P, F */
+    font-size: 0.85em;
+    color: #ccc;
+    flex-grow: 1;
+    justify-content: flex-end; /* Align macros to the right */
+  }
+   .food-macros-summary span {
+      min-width: 50px; /* Give some space */
+      text-align: right;
+   }
+  
+  .expand-button {
+    background: none;
+    border: none;
+    color: #ccc;
+    cursor: pointer;
+    font-size: 0.8em;
+    padding: 0 5px;
+    margin-left: 10px;
+  }
+  
+  .food-item-details {
+    padding: 10px 15px;
+    background-color: #484848; /* Slightly darker */
+    border-top: 1px solid #666;
+    font-size: 0.9em;
+    color: #ddd;
+  }
+  
+  .food-item-details h4 {
+    margin-top: 0;
+    margin-bottom: 8px;
+    color: #eee;
+    font-size: 1em;
+  }
+  
+  .food-item-details p {
+    margin: 4px 0;
+    display: flex;
+    justify-content: space-between; /* Align label and value */
+  }
+   .food-item-details p strong {
+      color: #ccc;
+   }

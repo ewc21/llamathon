@@ -1,0 +1,101 @@
+/* filepath: /Users/william/Desktop/llamathon/frontend/src/Styles/MealSection.css */
+.meal-section {
+    background-color: #444;
+    padding: 12px 16px;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .meal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #555;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+  }
+  
+  .meal-header h3 {
+    margin: 0;
+    color: #eee;
+    font-size: 1.2em;
+  }
+  
+  .add-button {
+    background-color: #646cff;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    font-size: 1.2em;
+    line-height: 26px; /* Center the '+' */
+    text-align: center;
+    cursor: pointer;
+    padding: 0;
+  }
+  .add-button:hover {
+    background-color: #535bf2;
+  }
+  
+  .food-list {
+     /* Styles for the list container if needed */
+     display: flex;
+     flex-direction: column;
+     gap: 8px;
+  }
+  
+  .empty-meal-text {
+      color: #aaa;
+      font-style: italic;
+      font-size: 0.9em;
+      text-align: center;
+      padding: 10px 0;
+  }
+  
+  
+  .log-form {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    align-items: center;
+  }
+  
+  .log-input {
+    flex-grow: 1;
+    padding: 8px 10px;
+    border-radius: 4px;
+    border: 1px solid #666;
+    background-color: #555;
+    color: white;
+    font-size: 0.9em;
+  }
+  .log-input::placeholder {
+      color: #bbb;
+  }
+  
+  .log-submit-button, .log-cancel-button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+  }
+  
+  .log-submit-button {
+    background-color: #4CAF50; /* Green */
+    color: white;
+  }
+  .log-submit-button:hover {
+    background-color: #45a049;
+  }
+  
+   .log-cancel-button {
+    background-color: #888; /* Grey */
+    color: white;
+  }
+  .log-cancel-button:hover {
+    background-color: #777;
+  }
