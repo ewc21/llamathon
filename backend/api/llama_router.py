@@ -21,7 +21,7 @@ def chat(form_data: LlamaModel, db: Session = Depends(get_db)):
         
     # llm = next(m for m in models if m.type == "llm")
     llm = models[0]
-    model_id = llm.id
+    model_id = llm.identifier
     
     print(llm.dict())
     instructions = Path("backend/llama_stack_client/instructions.txt").read_text()
