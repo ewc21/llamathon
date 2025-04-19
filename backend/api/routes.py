@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
-from fastapi.security import OAuth2PasswordRequestForm
-from auth.security import create_access_token, verify_password
+from sqlalchemy.orm import Session
+from auth.security import create_access_token, hash_password, verify_password
+from schema.user import UserCreate, UserLogin
 
 from database.dependency import get_db
 from database.models import User
-# from api.chat_handler import handle_chat
 
 user_router = APIRouter()
 
@@ -20,10 +20,26 @@ def calculate_calories(height: float, age: int, activity_level: str) -> int:
 
     
 @user_router.post("/login")
-def login(form_data: OAuth2PasswordRequestForm = Depends(), db=Depends(get_db)):
+def login(form_data: UserLogin, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.username == form_data.username).first()
     if not user or not verify_password(form_data.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
     access_token = create_access_token(data={"sub": user.username})
     return {"access_token": access_token, "token_type": "bearer"}
+
+@user_router.post("/signup")
+def signup(user_data: UserCreate, db: Session = Depends(get_db)):
+    # Check if user already exists
+    existing_user = db.query(User).filter(User.username == user_data.username).first()
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Username already taken")
+
+    hashed_pw = hash_password(user_data.password)
+    new_user = User(username=user_data.username, hashed_password=hashed_pw, name=user_data.name, age = user_data.age)
+
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+
+    return {"message": "User created", "id": new_user.id}

@@ -11,10 +11,10 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     
     name = Column(String, nullable=False)
-    height = Column(String, nullable=False)
+    height = Column(String, nullable=True)
     age = Column(Integer, nullable=False)
-    activity_level = Column(Enum("Sedentary", "Lightly Active", "Moderately Active", "Very Active"), nullable=False)
-    calories = Column(Integer, nullable=False)
+    activity_level = Column(Enum("Sedentary", "Lightly Active", "Moderately Active", "Very Active"), nullable=True)
+    calories = Column(Integer, nullable=True)
 
 class Meal(Base):
     __tablename__ = 'meals'
