@@ -9,7 +9,7 @@ from database.models import User
 user_router = APIRouter()
 
 def calculate_calories(height: float, age: int, activity_level: str) -> int:
-    base_calories = 10 * height + 6.25 * height - 5 * age + 5  # e.g., Mifflin-St Jeor
+    base_calories = 10 * height + 6.25 * height - 5 * age + 5
     multiplier = {
         "Sedentary": 1.2,
         "Lightly Active": 1.375,
@@ -17,7 +17,6 @@ def calculate_calories(height: float, age: int, activity_level: str) -> int:
         "Very Active": 1.725,
     }[activity_level]
     return int(base_calories * multiplier)
-
     
 @user_router.post("/login")
 def login(form_data: UserLogin, db: Session = Depends(get_db)):
@@ -36,7 +35,12 @@ def signup(user_data: UserCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Username already taken")
 
     hashed_pw = hash_password(user_data.password)
-    new_user = User(username=user_data.username, hashed_password=hashed_pw, name=user_data.name, age = user_data.age)
+    new_user = User(username=user_data.username, 
+                    hashed_password=hashed_pw, 
+                    name=user_data.name, 
+                    age = user_data.age, 
+                    calories = calculate_calories(user_data.height, user_data.age, user_data.activity_level),
+                    multiplier = user_data.activity_level)
 
     db.add(new_user)
     db.commit()

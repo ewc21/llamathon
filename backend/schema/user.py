@@ -7,6 +7,8 @@ class UserLogin(BaseModel):
 class UserCreate(BaseModel):
     username: str
     password: str
+    height: float
+    activity_level: str
     name: str
     age: int
     
