@@ -1,5 +1,6 @@
 from sqlalchemy import Column, Enum, Integer, String, ForeignKey, DateTime, JSON
-from sqlalchemy.orm import declarative_base
+from sqlalchemy.orm import declarative_base, relationship
+from database.db import Base
 
 Base = declarative_base()
 
