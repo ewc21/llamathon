@@ -2,8 +2,8 @@ import os
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
-from ..database.models import User
-from ..database.dependency import get_db
+from database.models import User
+from database.dependency import get_db
 from sqlalchemy.orm import Session
 from dotenv import load_dotenv
 
