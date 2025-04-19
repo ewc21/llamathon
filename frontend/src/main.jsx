@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import App from "./Pages/App.jsx";
 import About from "./Pages/About.jsx"; // your new page
-import LandingPage from "./Pages/LangingPage.jsx";
+import LandingPage from "./Pages/LandingPage.jsx";
 import LoginPage from "./Pages/LoginPage.jsx";
 import CreateAccountPage from "./Pages/CreateAccountPage.jsx";
 import DashboardPage from "./Pages/DashboardPage.jsx";
