@@ -3,14 +3,16 @@ import "../Styles/StatsCard.css";
 
 const StatsCard = ({
   label,
-  value,
-  width = 300,
+  currentValue,
+  goalValue,
+  width = 600,
   height = 180,
   minFontSize = 12,
-  maxFontSize = 100,
+  maxFontSize = 64,
 }) => {
-  const containerRef = useRef(null);
-  const textRef = useRef(null);
+  const currentRef = useRef(null);
+  const goalRef = useRef(null);
+
   const units = {
     Calories: "",
     Protein: "g",
@@ -26,30 +28,51 @@ const StatsCard = ({
     Calcium: "%",
     Iron: "%",
   };
+
   useLayoutEffect(() => {
-    const container = containerRef.current;
-    const text = textRef.current;
-    if (!container || !text) return;
+    const refs = [currentRef, goalRef];
 
-    let fontSize = maxFontSize;
-    text.style.fontSize = fontSize + "px";
+    refs.forEach((ref) => {
+      const container = ref.current?.closest(".calorie-block");
+      const text = ref.current;
+      if (!container || !text) return;
 
-    while (fontSize > minFontSize && text.scrollWidth > container.clientWidth) {
-      fontSize -= 1;
+      let fontSize = maxFontSize;
       text.style.fontSize = fontSize + "px";
-    }
-  }, [value, maxFontSize, minFontSize]);
+
+      while (
+        fontSize > minFontSize &&
+        text.scrollWidth > container.clientWidth
+      ) {
+        fontSize -= 1;
+        text.style.fontSize = fontSize + "px";
+      }
+    });
+  }, [currentValue, goalValue, maxFontSize, minFontSize]);
 
   return (
     <div
-      ref={containerRef}
       className="calorie-box"
       style={{ width: `${width}px`, height: `${height}px` }}
     >
       <div className="calorie-title">{label}</div>
-      <div ref={textRef} className="calorie-value">
-        {value}
-        {units[label]}
+      <div className="calorie-value-wrapper">
+        <div className="calorie-row">
+          <div className="calorie-block">
+            <div className="calorie-subtitle">Current</div>
+            <div ref={currentRef} className="calorie-value">
+              {currentValue}
+              {units[label]}
+            </div>
+          </div>
+          <div className="calorie-block">
+            <div className="calorie-subtitle">Goal</div>
+            <div ref={goalRef} className="calorie-value">
+              {goalValue}
+              {units[label]}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

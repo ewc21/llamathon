@@ -13,7 +13,12 @@ const LandingPage = () => {
         <button className="action-button" onClick={() => navigate("/login")}>
           Login
         </button>
-        <button className="action-button">Create Account</button>
+        <button
+          className="action-button"
+          onClick={() => navigate("/create-account")}
+        >
+          Create Account
+        </button>
       </div>
     </div>
   );

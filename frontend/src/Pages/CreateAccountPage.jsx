@@ -12,10 +12,10 @@ const CreateAccountPage = () => {
       <img src={LlamaLogo} alt="Llama Logo" className="llama-logo" />
       <form className="auth-form">
         <input type="text" placeholder="Full Name" className="auth-input" />
-        <input type="email" placeholder="Email" className="auth-input" />
+        <input type="text" placeholder="Username" className="auth-input" />
         <input type="password" placeholder="Password" className="auth-input" />
         <button className="action-button">Create Account</button>
-        <p className="link-text" onClick={() => navigate("/")}>
+        <p className="link-text" onClick={() => navigate("/login")}>
           Already have an account? Login
         </p>
       </form>

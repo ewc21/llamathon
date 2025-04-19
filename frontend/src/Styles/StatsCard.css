@@ -1,29 +1,61 @@
 .calorie-box {
-  background-color: #8b8686; /* solid grey */
+  background-color: #8b8686;
   border-radius: 12px;
-  width: 300px;
-  height: 180px;
-  padding: 1px;
+  padding: 16px;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  margin: 20px auto;
+}
 
+.calorie-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: black;
+  margin-bottom: 12px;
+}
+
+.calorie-row {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  gap: 24px;
+}
+
+.calorie-block {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin: 20px auto; /* centers horizontally */
+  flex: 1;
+  max-width: 50%; /* Ensures width is constrained */
+  overflow: hidden; /* Prevents overflow */
 }
 
-.calorie-title {
-  font-size: 1.2rem;
+.calorie-subtitle {
+  font-size: 1rem;
   font-weight: bold;
+  margin-bottom: 4px;
   color: black;
-  margin-bottom: 8px;
+}
+
+.calorie-value-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
 }
 
 .calorie-value {
   font-weight: bold;
   white-space: nowrap;
-  line-height: 1;
+  line-height: 1.15;
   color: black;
-  /* font-size is dynamically set by JS */
+  width: 100%;
+  text-align: center;
+  overflow: hidden;
+  padding-bottom: 4px;
 }
