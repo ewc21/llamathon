@@ -1,8 +1,8 @@
 import React from "react";
-import LlamaLogo from "./assets/LlamaLogo.png";
-import "./LandingPage.css";
+import LlamaLogo from "../assets/LlamaLogo.png";
+import "../Styles/LandingPage.css"; // Adjust the path as necessary
 import { useNavigate } from "react-router-dom";
-// import { useState } from "react";
+import StatsCard from "../Components/StatsCard"; // Adjust the path as necessary
 const LandingPage = () => {
   const navigate = useNavigate();
   return (

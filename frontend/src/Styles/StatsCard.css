@@ -1,0 +1,29 @@
+.calorie-box {
+  background-color: #8b8686; /* solid grey */
+  border-radius: 12px;
+  width: 300px;
+  height: 180px;
+  padding: 1px;
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 20px auto; /* centers horizontally */
+}
+
+.calorie-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: black;
+  margin-bottom: 8px;
+}
+
+.calorie-value {
+  font-weight: bold;
+  white-space: nowrap;
+  line-height: 1;
+  color: black;
+  /* font-size is dynamically set by JS */
+}

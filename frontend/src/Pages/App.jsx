@@ -1,7 +1,7 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import "./App.css";
-import LlamaLogo from "./assets/LlamaLogo.png";
+import reactLogo from "../assets/react.svg";
+import "../Styles/App.css";
+import LlamaLogo from "../assets/LlamaLogo.png";
 function App() {
   const [count, setCount] = useState(0);
 
