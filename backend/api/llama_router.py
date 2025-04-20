@@ -135,10 +135,10 @@ def chat(form_data: LlamaModel, db: Session = Depends(get_db),
     if not meal_items:
         return {"response": response.output_message.content}
 
-    # Create a new Meal (for now, hardcode meal_type as 'lunch')
+    # With this:
     new_meal = Meal(
         user_id=1,  # Replace with user.id when auth is added
-        meal_type="lunch",
+        meal_type=form_data.meal_type,  # Use the meal_type from the request
         timestamp=datetime.utcnow()
     )
     db.add(new_meal)

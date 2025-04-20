@@ -76,7 +76,10 @@ const DashboardPage = () => {
       const response = await fetch("http://localhost:8000/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: inputText }),
+        body: JSON.stringify({ 
+          prompt: inputText,
+          meal_type: mealType  // Add meal_type to the request body
+        }),
       });
       if (!response.ok) return { success: false };
 
@@ -144,43 +147,4 @@ const DashboardPage = () => {
   return (
     <div className="dashboard-container">
       <header className="dashboard-header">
-        <img src={LlamaLogo} alt="Llama Logo" className="dashboard-logo" />
-      </header>
-
-      <div className="dashboard-content">
-        <div className="meal-sections-panel">
-          <MealSection
-            title="Breakfast"
-            mealType="breakfast"
-            items={breakfastItems}
-            onLogSubmit={handleLogSubmit}
-          />
-          <MealSection
-            title="Lunch"
-            mealType="lunch"
-            items={lunchItems}
-            onLogSubmit={handleLogSubmit}
-          />
-          <MealSection
-            title="Dinner"
-            mealType="dinner"
-            items={dinnerItems}
-            onLogSubmit={handleLogSubmit}
-          />
-          <MealSection
-            title="Snacks"
-            mealType="snacks"
-            items={snackItems}
-            onLogSubmit={handleLogSubmit}
-          />
-        </div>
-
-        <div className="stats-panel">
-          <DailyOverview dailyTotals={dailyTotals} />
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default DashboardPage;
+        <img src={      <div className="dashboard-content">         <div className="meal-sections-panel">N          <MealSectiona            title="Breakfast"s            mealType="breakfast"c            items={breakfastItems}=            onLogSubmit={handleLogSubmit}y          />=          <MealSectionS            title="Lunch"             mealType="lunch"c            items={lunchItems}=            onLogSubmit={handleLogSubmit}y          />=          <MealSectionS            title="Dinner"             mealType="dinner"c            items={dinnerItems}=            onLogSubmit={handleLogSubmit}y          />=          <MealSectionS            title="Snacks"             mealType="snacks"c            items={snackItems}=            onLogSubmit={handleLogSubmit}y          />=        </div>S         <div className="stats-panel">           <DailyOverview dailyTotals={dailyTotals} />s        </div>s      </div>v    </div>   );<};;eexport default DashboardPage;t
