@@ -77,3 +77,23 @@ def get_meal_items_for_date(user_id: int, date: str, db: Session = Depends(get_d
 
     results = [{col.name: getattr(item, col.name) for col in item.__table__.columns} for item in meal_items]
     return {"meal_items": results}
+
+@meal_router.get("/meals")
+def get_all_meal_items_with_type(db: Session = Depends(get_db)):
+    """
+    Get all meal items for a given user across all dates, including meal_type
+    """
+    meal_items = (
+        db.query(MealItem, Meal.meal_type)
+        .join(Meal, MealItem.meal_id == Meal.id)
+        .filter(Meal.user_id == 1)
+        .all()
+    )
+
+    results = []
+    for item, meal_type in meal_items:
+        item_data = {col.name: getattr(item, col.name) for col in item.__table__.columns}
+        item_data["meal_type"] = meal_type
+        results.append(item_data)
+
+    return {"meal_items": results}

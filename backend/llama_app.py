@@ -1,5 +1,6 @@
 from api.user_router import user_router
 from api.llama_router import llama_router
+from api.user_router import meal_router
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from llama_stack_client import LlamaStackClient
@@ -24,6 +25,7 @@ app.add_middleware(
 )
 
 app.include_router(user_router)
+app.include_router(meal_router)
 app.include_router(llama_router)
 
 @app.on_event("startup")
