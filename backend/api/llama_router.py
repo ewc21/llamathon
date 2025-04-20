@@ -1,19 +1,21 @@
+from datetime import datetime
+import json
 import time
 from llama_stack_client import LlamaStackClient
 from llama_stack_client import Agent, AgentEventLogger
-from rich.pretty import pprint
 import uuid
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from auth.security import create_access_token, hash_password, verify_password
 from auth.auth import get_current_user
-from database.models import Meal, User
+from database.models import Meal, MealItem, User
 from schema.user import UserCreate, UserLogin
 from pathlib import Path
 from database.dependency import get_db
 from schema.llama import LlamaModel
 import os
+import re, json5
 
 llama_router = APIRouter()
 
@@ -24,9 +26,8 @@ def chat(form_data: LlamaModel, db: Session = Depends(get_db),
          ):
     
     user_meals = db.execute(
-        select(Meal)
-        # for testing
-        # .filter(Meal.user_id == user.id)
+        select(MealItem)
+        .join(Meal, Meal.id == MealItem.meal_id)
         .filter(Meal.user_id == 1)
     ).scalars().all()
 
@@ -34,8 +35,6 @@ def chat(form_data: LlamaModel, db: Session = Depends(get_db),
         {
             "item_name": meal.item_name,
             "quantity": meal.quantity,
-            "macros": meal.macros,
-            "micros": meal.micros,
         }
         for meal in user_meals
     ] if user_meals else None
@@ -78,14 +77,14 @@ def chat(form_data: LlamaModel, db: Session = Depends(get_db),
             "vitamin D": 2,
             "vitamin B6": 0.3,
             "vitamin B12": 0.4
+            "summary": "",
+            "new_meal_contribution": "",
+            "verdict": ""
             },
             ...
         ]
         }
-
-        If the input is not a food item or a general question, you can avoid responding in the JSON format above and give an informative answer.
-        If the input is ambiguous, make a reasonable guess. If the user's message doesn't make sense, seems impossible, or sounds like a joke, kindly point that out and ask them to clarify.
-        Do not just repeat or accept nonsense. Be honest, informative, and a little witty if appropriate.
+        Respond with valid JSON only (no trailing commas, no markdown, no extra text).
     """
     
     client = LlamaStackClient(base_url=f"http://localhost:8321")
@@ -120,68 +119,59 @@ def chat(form_data: LlamaModel, db: Session = Depends(get_db),
         session_id=session_id,
         stream=False,
     )
-    print("agent>", response.output_message.content)
-    # if any(kw in form_data.prompt.lower() for kw in ["yes", "done", "that looks good", "i'm satisfied"]):
-    #     print("✅ Great! I've added the nutrition breakdown of your meal to your dashboard.")
+    
+    raw = response.output_message.content
+    raw = re.sub(r',\s*}', '}', raw)   # remove trailing comma before }
+    raw = re.sub(r',\s*]', ']', raw)   # remove trailing comma before ]
 
-    #     # Ask Llama to output JSON of meal
-    #     final_structured_response = agent.create_turn(
-    #         messages=[
-    #             {"role": "user", "content": "Please return the nutrition breakdown in JSON as instructed earlier."}
-    #         ],
-    #         session_id=session_id,
-    #         stream=False,
-    #     )
+    parsed = json.loads(response.output_message.content)
 
-    #     # Parse the JSON result (ideally handle edge cases with try/except)
-    #     import json
-    #     try:
-    #         parsed = json.loads(final_structured_response.output_message.content)
-    #     except Exception as e:
-    #         raise HTTPException(status_code=400, detail="Failed to parse nutrition data.")
+    # If LLM returned the list directly
+    if isinstance(parsed, list):
+        meal_items = parsed
+    else:  # normal {"meal_items":[...]} shape
+        meal_items = parsed.get("meal_items", [])
 
-    #     # Save to database (example assumes parsed['meal_items'] exists)
-    #     from database.models import Meal, MealItem
-    #     from datetime import datetime
+    if not meal_items:
+        return {"response": response.output_message.content}
 
-    #     meal = Meal(user_id=form_data.user_id, timestamp=datetime.now())
-    #     db.add(meal)
-    #     db.flush()  # get meal.id before committing
+    # Create a new Meal (for now, hardcode meal_type as 'lunch')
+    new_meal = Meal(
+        user_id=1,  # Replace with user.id when auth is added
+        meal_type="lunch",
+        timestamp=datetime.utcnow()
+    )
+    db.add(new_meal)
+    db.flush()  # Assigns ID so MealItem can reference new_meal.id
+    
+    print("HIDKFJLSDJF")
 
-    #     for item in parsed["meal_items"]:
-    #         db_item = MealItem(
-    #             meal_id=meal.id,
-    #             item_name=item["name"],
-    #             quantity=item.get("quantity"),
-    #             macros={
-    #                 "calories": item.get("calories"),
-    #                 "protein": item.get("protein"),
-    #                 "carbohydrates": item.get("carbohydrates"),
-    #                 "fat": item.get("fat")
-    #             },
-    #             micros={
-    #                 "fiber": item.get("fiber"),
-    #                 "iron": item.get("iron"),
-    #                 "calcium": item.get("calcium"),
-    #                 "potassium": item.get("potassium"),
-    #                 "magnesium": item.get("magnesium"),
-    #                 "zinc": item.get("zinc"),
-    #                 "sodium": item.get("sodium"),
-    #                 "vitamin A": item.get("vitamin A"),
-    #                 "vitamin C": item.get("vitamin C"),
-    #                 "vitamin D": item.get("vitamin D"),
-    #                 "vitamin B6": item.get("vitamin B6"),
-    #                 "vitamin B12": item.get("vitamin B12")
-    #             }
-    #         )
-    #         db.add(db_item)
+    # Add each meal item
+    for item in meal_items:
+        db_item = MealItem(
+            meal_id=new_meal.id,
+            item_name=item.get("name", ""),
+            quantity=item.get("quantity", ""),
+            calories=item.get("calories", 0),
+            protein=item.get("protein", 0),
+            carbohydrates=item.get("carbohydrates", 0),
+            fat=item.get("fat", 0),
+            fiber=item.get("fiber", 0),
+            iron=item.get("iron", 0),
+            calcium=item.get("calcium", 0),
+            potassium=item.get("potassium", 0),
+            magnesium=item.get("magnesium", 0),
+            zinc=item.get("zinc", 0),
+            sodium=item.get("sodium", 0),
+            vitamin_a=item.get("vitamin A", 0),
+            vitamin_c=item.get("vitamin C", 0),
+            vitamin_d=item.get("vitamin D", 0),
+            vitamin_b6=item.get("vitamin B6", 0),
+            vitamin_b12=item.get("vitamin B12", 0),
+        )
+        db.add(db_item)
 
-    #     db.commit()
-
-    #     return {
-    #         "message": "Meal saved to database!",
-    #         "structured_data": parsed
-    #     }
+    db.commit()
 
     return {
         "response": response.output_message.content

@@ -1,10 +1,25 @@
-import React, { useState } from 'react';
-import FoodItem from './FoodItem'; // We'll create this next
-import '../Styles/MealSection.css';
+import React, { useState } from "react";
+import FoodItem from "./FoodItem";
+import "../Styles/MealSection.css";
 
 const MealSection = ({ title, mealType, items, onLogSubmit }) => {
   const [isInputVisible, setIsInputVisible] = useState(false);
-  const [inputText, setInputText] = useState('');
+  const [inputText, setInputText] = useState("");
+  const [chatMessages, setChatMessages] = useState([]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!inputText.trim()) return;
+
+    const result = await onLogSubmit(mealType, inputText);
+
+    if (result?.success && result.messages?.length) {
+      setChatMessages((prev) => [...prev, ...result.messages]);
+    }
+
+    setInputText("");
+    setIsInputVisible(false);
+  };
 
   const handleAddClick = () => {
     setIsInputVisible(true);
@@ -12,18 +27,6 @@ const MealSection = ({ title, mealType, items, onLogSubmit }) => {
 
   const handleInputChange = (e) => {
     setInputText(e.target.value);
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault(); // Prevent page reload on form submit
-    if (!inputText.trim()) return; // Don't submit empty text
-
-    console.log(`Submitting for ${mealType}: ${inputText}`); // Placeholder
-    // In the future, call the actual API function passed via onLogSubmit
-    // onLogSubmit(mealType, inputText);
-
-    setInputText('');
-    setIsInputVisible(false);
   };
 
   return (
@@ -37,17 +40,24 @@ const MealSection = ({ title, mealType, items, onLogSubmit }) => {
         )}
       </div>
 
-      {/* List of logged food items */}
       <div className="food-list">
         {items.map((item, index) => (
-          <FoodItem key={`${mealType}-${index}`} foodData={item} />
+          <FoodItem key={item._id || `${mealType}-${index}`} foodData={item} />
         ))}
         {items.length === 0 && !isInputVisible && (
-           <p className="empty-meal-text">No items logged yet.</p>
+          <p className="empty-meal-text">No items logged yet.</p>
         )}
       </div>
 
-      {/* Input area that appears when '+' is clicked */}
+      {/* Chat-style feedback */}
+      <div className="meal-chat">
+        {chatMessages.map((msg, idx) => (
+          <div key={idx} className="chat-bubble">
+            {msg}
+          </div>
+        ))}
+      </div>
+
       {isInputVisible && (
         <form onSubmit={handleSubmit} className="log-form">
           <input
@@ -61,7 +71,11 @@ const MealSection = ({ title, mealType, items, onLogSubmit }) => {
           <button type="submit" className="log-submit-button">
             Log
           </button>
-           <button type="button" onClick={() => setIsInputVisible(false)} className="log-cancel-button">
+          <button
+            type="button"
+            onClick={() => setIsInputVisible(false)}
+            className="log-cancel-button"
+          >
             Cancel
           </button>
         </form>
