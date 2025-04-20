@@ -12,9 +12,9 @@ def calculate_calories(height: float, age: int, activity_level: str) -> int:
     base_calories = 10 * height + 6.25 * height - 5 * age + 5
     multiplier = {
         "Sedentary": 1.2,
-        "Lightly Active": 1.375,
-        "Moderately Active": 1.55,
-        "Very Active": 1.725,
+        "Light": 1.375,
+        "Moderate": 1.55,
+        "Very": 1.725,
     }[activity_level]
     return int(base_calories * multiplier)
     
@@ -39,8 +39,8 @@ def signup(user_data: UserCreate, db: Session = Depends(get_db)):
                     hashed_password=hashed_pw, 
                     name=user_data.name, 
                     age = user_data.age, 
-                    calories = calculate_calories(user_data.height, user_data.age, user_data.activity_level),
-                    multiplier = user_data.activity_level)
+                    calories = calculate_calories(user_data.height, user_data.age, user_data.multiplier),
+                    multiplier = user_data.multiplier)
 
     db.add(new_user)
     db.commit()

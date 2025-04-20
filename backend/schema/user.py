@@ -8,7 +8,7 @@ class UserCreate(BaseModel):
     username: str
     password: str
     height: float
-    activity_level: str
+    multiplier: str
     name: str
     age: int
     

@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Enum, Integer, String, ForeignKey, DateTime, JSON
-from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
 
@@ -13,7 +13,7 @@ class User(Base):
     name = Column(String, nullable=False)
     height = Column(String, nullable=True)
     age = Column(Integer, nullable=False)
-    activity_level = Column(Enum("Sedentary", "Lightly Active", "Moderately Active", "Very Active"), nullable=True)
+    multiplier = Column(Enum("Sedentary", "Light", "Moderate", "Very"), nullable=True)
     calories = Column(Integer, nullable=True)
 
 class Meal(Base):
