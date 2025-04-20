@@ -15,6 +15,7 @@ class User(Base):
     age = Column(Integer, nullable=False)
     multiplier = Column(Enum("Sedentary", "Light", "Moderate", "Very"), nullable=True)
     calories = Column(Integer, nullable=True)
+    meals = relationship("Meal", back_populates="user", cascade="all, delete-orphan")
 
 class Meal(Base):
     __tablename__ = 'meals'

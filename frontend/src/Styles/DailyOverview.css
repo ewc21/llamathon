@@ -1,46 +1,48 @@
-/* filepath: /Users/william/Desktop/llamathon/frontend/src/Styles/DailyOverview.css */
 .daily-overview {
-    background-color: #555; /* Or match StatsCard color */
-    border-radius: 12px;
-    padding: 20px;
-    box-sizing: border-box;
-    color: #eee;
-    width: 90%; /* Control width */
-    max-width: 400px; /* Max width */
-    margin: auto; /* Center horizontally if needed */
-  }
-  
-  .daily-overview h2 {
-    text-align: center;
-    margin-top: 0;
-    margin-bottom: 20px;
-    font-size: 1.5em;
-    color: white;
-  }
-  
-  .totals-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr); /* Two columns */
-    gap: 15px 20px; /* Row gap, Column gap */
-  }
-  
-  .total-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center; /* Center text */
-    background-color: #666;
-    padding: 10px;
-    border-radius: 6px;
-  }
-  
-  .total-label {
-    font-size: 0.9em;
-    color: #ccc;
-    margin-bottom: 4px;
-  }
-  
-  .total-value {
-    font-size: 1.1em;
-    font-weight: bold;
-    color: white;
-  }
+  background-color: #555; /* Or match StatsCard color */
+  border-radius: 12px;
+  padding: 20px;
+  box-sizing: border-box;
+  color: #eee;
+  width: 90%;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 0; /* ✅ Removed top margin */
+  margin-bottom: 0; /* ✅ Removed bottom margin */
+}
+
+.daily-overview h2 {
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 1.5em;
+  color: white;
+}
+
+.totals-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px 20px;
+}
+
+.total-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #666;
+  padding: 10px;
+  border-radius: 6px;
+}
+
+.total-label {
+  font-size: 0.9em;
+  color: #ccc;
+  margin-bottom: 4px;
+}
+
+.total-value {
+  font-size: 1.1em;
+  font-weight: bold;
+  color: white;
+}

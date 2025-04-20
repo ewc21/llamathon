@@ -6,8 +6,10 @@ from schema.user import UserCreate, UserLogin
 
 from database.dependency import get_db
 from database.models import Meal, MealItem, User
+from schema.meal import MealCreate, MealItemCreate
 
 user_router = APIRouter()
+meal_router = APIRouter()
 
 def calculate_calories(height: float, age: int, activity_level: str) -> int:
     base_calories = 10 * height + 6.25 * height - 5 * age + 5
@@ -49,8 +51,6 @@ def signup(user_data: UserCreate, db: Session = Depends(get_db)):
 
     return {"message": "User created", "id": new_user.id}
 
-meal_router = APIRouter()
-
 @meal_router.get("/meals/{user_id}/{date}")
 def get_meal_items_for_date(user_id: int, date: str, db: Session = Depends(get_db)):
     """
@@ -77,3 +77,49 @@ def get_meal_items_for_date(user_id: int, date: str, db: Session = Depends(get_d
 
     results = [{col.name: getattr(item, col.name) for col in item.__table__.columns} for item in meal_items]
     return {"meal_items": results}
+
+
+@meal_router.post("/meal-items")
+def add_meal_item(item: MealItemCreate, db: Session = Depends(get_db)):
+    """
+    Add a new meal item to a specific meal.
+    """
+    # Check if meal exists
+    meal = db.query(Meal).filter(Meal.id == item.meal_id).first()
+    if not meal:
+        raise HTTPException(status_code=404, detail="Meal not found")
+
+    new_item = MealItem(**item.dict())
+    db.add(new_item)
+    db.commit()
+    db.refresh(new_item)
+
+    return {
+        "message": "Meal item added successfully",
+        "meal_item_id": new_item.id,
+        "item_name": new_item.item_name
+    }
+
+@meal_router.post("/meals/")
+def create_meal(meal_data: MealCreate, db: Session = Depends(get_db)):
+    # Ensure the user exists
+    user = db.query(User).filter(User.id == meal_data.user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    # Create the meal
+    new_meal = Meal(
+        user_id=meal_data.user_id,
+        meal_type=meal_data.meal_type
+    )
+    db.add(new_meal)
+    db.commit()
+    db.refresh(new_meal)
+
+    return {
+        "message": "Meal created successfully",
+        "meal_id": new_meal.id,
+        "user_id": new_meal.user_id,
+        "meal_type": new_meal.meal_type,
+        "timestamp": new_meal.timestamp
+    }

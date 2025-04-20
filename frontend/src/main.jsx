@@ -7,6 +7,7 @@ import LandingPage from "./Pages/LandingPage.jsx";
 import LoginPage from "./Pages/LoginPage.jsx";
 import CreateAccountPage from "./Pages/CreateAccountPage.jsx";
 import DashboardPage from "./Pages/DashboardPage.jsx";
+import EnterGoalsPage from "./Pages/EnterGoalsPage.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <BrowserRouter>
@@ -17,6 +18,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<CreateAccountPage />} />
       <Route path="/dashboard" element={<DashboardPage />} />
+      <Route path="/goals" element={<EnterGoalsPage />} />
     </Routes>
   </BrowserRouter>
 );
