@@ -20,8 +20,7 @@ const MealSection = ({ title, mealType, items, onLogSubmit }) => {
 
     console.log(`Submitting for ${mealType}: ${inputText}`); // Placeholder
     // In the future, call the actual API function passed via onLogSubmit
-    // onLogSubmit(mealType, inputText);
-
+    onLogSubmit(mealType, inputText);
     setInputText('');
     setIsInputVisible(false);
   };
