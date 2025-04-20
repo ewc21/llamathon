@@ -1,150 +1,147 @@
-import React, { useState, useEffect, useCallback } from "react";
-import MealSection from "../Components/MealSection";
-import DailyOverview from "../Components/DailyOverview";
-import LlamaLogo from "../assets/LlamaLogo.png";
-import "../Styles/DashboardPage.css";
-
-const USER_ID = 1; // TODO: replace with real user id once auth is wired
-const POLL_MS = 10_000; // background refresh every 10 s
+import React, { useState, useEffect } from 'react';
+import MealSection from '../Components/MealSection';
+import DailyOverview from '../Components/DailyOverview';
+import LlamaLogo from '../assets/LlamaLogo.png';
+import '../Styles/DashboardPage.css'; // Keep existing styles, may need adjustments
 
 const DashboardPage = () => {
-  /* ────────────────────────── state ────────────────────────── */
+  // State for each meal's items
   const [breakfastItems, setBreakfastItems] = useState([]);
   const [lunchItems, setLunchItems] = useState([]);
   const [dinnerItems, setDinnerItems] = useState([]);
   const [snackItems, setSnackItems] = useState([]);
 
+  // State for daily totals
   const [dailyTotals, setDailyTotals] = useState({
-    calories: 0,
-    protein: 0,
-    carbohydrates: 0,
-    fat: 0,
-    fiber: 0,
-    sodium: 0,
+    calories: 0, protein: 0, carbohydrates: 0, fat: 0, fiber: 0, sodium: 0, // Add more micros
   });
 
-  /* ───────────────── fetch ALL items helper ───────────────── */
-  const fetchAllMeals = useCallback(async () => {
-    try {
-      const res = await fetch(`http://localhost:8000/meals`);
-      if (!res.ok) {
-        console.error("Fetch meals error:", res.statusText);
-        return;
-      }
-      const { meal_items } = await res.json();
-
-      // bucket by meal_type
-      const b = [],
-        l = [],
-        d = [],
-        s = [];
-      meal_items.forEach((m) => {
-        switch (m.meal_type) {
-          case "breakfast":
-            b.push(m);
-            break;
-          case "lunch":
-            l.push(m);
-            break;
-          case "dinner":
-            d.push(m);
-            break;
-          case "snacks":
-            s.push(m);
-            break;
-        }
-      });
-      setBreakfastItems(b);
-      setLunchItems(l);
-      setDinnerItems(d);
-      setSnackItems(s);
-    } catch (e) {
-      console.error("Fetch meals failed:", e);
-    }
-  }, []);
-
-  /* initial + polling */
-  useEffect(() => {
-    fetchAllMeals(); // run once on mount
-    const id = setInterval(fetchAllMeals, POLL_MS);
-    return () => clearInterval(id); // cleanup
-  }, [fetchAllMeals]);
-
-  /* ───────────── handle manual “Log” submit ───────────── */
+  // Function to handle submitting a log entry
   const handleLogSubmit = async (mealType, inputText) => {
+    console.log(`Submitting to backend for ${mealType}: ${inputText}`);
+    setIsLoading(true); // Set loading true
+    setError(null); // Clear previous errors
+
     try {
-      const response = await fetch("http://localhost:8000/chat", {
+      const response = await fetch('/api/chat', { // Use your actual backend endpoint
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          prompt: inputText,
-          meal_type: mealType  // Add meal_type to the request body
-        }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ 
+        prompt: inputText,
+        meal_type: mealType  // Add meal_type to the request body
+      }),
       });
-      if (!response.ok) return { success: false };
+
+      if (!response.ok) {
+        // Try to get error details from response body
+        let errorDetail = `API Error: ${response.status} ${response.statusText}`;
+        try {
+            const errorData = await response.json();
+            errorDetail = errorData.detail || errorDetail;
+        } catch (e) { /* Ignore if response body isn't JSON */ }
+        throw new Error(errorDetail);
+      }
 
       const data = await response.json();
-      const parsed = JSON.parse(data.response);
+      console.log("API Response:", data);
 
-      const analysis = parsed.health_analysis || {};
-      const newItems = (parsed.meal_items || []).map((item, idx) => ({
-        ...item,
-        health_analysis: analysis,
-        _id: `${Date.now()}-${idx}`, // unique key for React
-      }));
+      // Process the response which contains the items saved in the DB
+      const newItems = data.logged_items || []; // Use the key returned by backend
 
-      // optimistic UI update
+      // Update the correct meal state
       switch (mealType) {
-        case "breakfast":
-          setBreakfastItems((prev) => [...prev, ...newItems]);
+        case 'breakfast':
+          setBreakfastItems(prev => [...prev, ...newItems]);
           break;
-        case "lunch":
-          setLunchItems((prev) => [...prev, ...newItems]);
+        case 'lunch':
+          setLunchItems(prev => [...prev, ...newItems]);
           break;
-        case "dinner":
-          setDinnerItems((prev) => [...prev, ...newItems]);
+        case 'dinner':
+          setDinnerItems(prev => [...prev, ...newItems]);
           break;
-        case "snacks":
-          setSnackItems((prev) => [...prev, ...newItems]);
+        case 'snacks':
+          setSnackItems(prev => [...prev, ...newItems]);
           break;
+        default:
+          console.error("Unknown meal type:", mealType);
       }
 
-      /* 🔥 immediately re‑sync from DB */
-      await fetchAllMeals();
-
-      return { success: true, messages: [] };
     } catch (err) {
-      console.error("Request failed:", err);
-      return { success: false };
+      console.error("Failed to log meal:", err);
+      setError(err.message || "Failed to connect to the server."); // Set error state
+      // Optionally display this error to the user in the UI
+    } finally {
+      setIsLoading(false); // Set loading false regardless of success/failure
     }
   };
 
-  /* ───────────── recompute daily totals ───────────── */
   useEffect(() => {
-    const all = [
-      ...breakfastItems,
-      ...lunchItems,
-      ...dinnerItems,
-      ...snackItems,
-    ];
-    const totals = all.reduce(
-      (acc, item) => ({
-        calories: acc.calories + (item.calories ?? item.macros?.calories ?? 0),
-        protein: acc.protein + (item.protein ?? item.macros?.protein ?? 0),
-        carbohydrates:
-          acc.carbohydrates +
-          (item.carbohydrates ?? item.macros?.carbohydrates ?? 0),
-        fat: acc.fat + (item.fat ?? item.macros?.fat ?? 0),
-        fiber: acc.fiber + (item.fiber ?? item.micros?.fiber ?? 0),
-        sodium: acc.sodium + (item.sodium ?? item.micros?.sodium ?? 0),
-      }),
-      { calories: 0, protein: 0, carbohydrates: 0, fat: 0, fiber: 0, sodium: 0 }
-    );
+    const allItems = [...breakfastItems, ...lunchItems, ...dinnerItems, ...snackItems];
+    const totals = allItems.reduce((acc, item) => {
+        // Sum up nutrients, handling potential missing values
+        // Ensure these keys match the column names returned from backend
+        acc.calories += item?.calories || 0;
+        acc.protein += item?.protein || 0;
+        acc.carbohydrates += item?.carbohydrates || 0;
+        acc.fat += item?.fat || 0;
+        acc.fiber += item?.fiber || 0;
+        acc.sodium += item?.sodium || 0;
+        // Add other micros here if you want them in the DailyOverview totals
+        acc.calcium += item?.calcium || 0;
+        acc.iron += item?.iron || 0;
+        acc.potassium += item?.potassium || 0;
+        // ... etc.
+        return acc;
+    }, { calories: 0, protein: 0, carbohydrates: 0, fat: 0, fiber: 0, sodium: 0, calcium: 0, iron: 0, potassium: 0 /* Init other micros */ });
+
     setDailyTotals(totals);
   }, [breakfastItems, lunchItems, dinnerItems, snackItems]);
 
-  /* ────────────────────────── UI ────────────────────────── */
+
   return (
     <div className="dashboard-container">
       <header className="dashboard-header">
-        <img src={      <div className="dashboard-content">         <div className="meal-sections-panel">N          <MealSectiona            title="Breakfast"s            mealType="breakfast"c            items={breakfastItems}=            onLogSubmit={handleLogSubmit}y          />=          <MealSectionS            title="Lunch"             mealType="lunch"c            items={lunchItems}=            onLogSubmit={handleLogSubmit}y          />=          <MealSectionS            title="Dinner"             mealType="dinner"c            items={dinnerItems}=            onLogSubmit={handleLogSubmit}y          />=          <MealSectionS            title="Snacks"             mealType="snacks"c            items={snackItems}=            onLogSubmit={handleLogSubmit}y          />=        </div>S         <div className="stats-panel">           <DailyOverview dailyTotals={dailyTotals} />s        </div>s      </div>v    </div>   );<};;eexport default DashboardPage;t
+        <img src={LlamaLogo} alt="Llama Logo" className="dashboard-logo" />
+        {/* Add User Profile/Logout later */}
+      </header>
+
+      <div className="dashboard-content">
+        {/* Left Panel: Meal Sections */}
+        <div className="meal-sections-panel"> {/* New wrapper div */}
+          <MealSection
+            title="Breakfast"
+            mealType="breakfast"
+            items={breakfastItems}
+            onLogSubmit={handleLogSubmit}
+          />
+          <MealSection
+            title="Lunch"
+            mealType="lunch"
+            items={lunchItems}
+            onLogSubmit={handleLogSubmit}
+          />
+          <MealSection
+            title="Dinner"
+            mealType="dinner"
+            items={dinnerItems}
+            onLogSubmit={handleLogSubmit}
+          />
+          <MealSection
+            title="Snacks"
+            mealType="snacks"
+            items={snackItems}
+            onLogSubmit={handleLogSubmit}
+          />
+        </div>
+
+        {/* Right Panel: Daily Overview */}
+        <div className="stats-panel"> {/* Re-using existing class */}
+          <DailyOverview dailyTotals={dailyTotals} />
+          {/* We removed the individual StatsCards */}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default DashboardPage;
