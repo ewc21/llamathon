@@ -5,7 +5,7 @@ import uuid
 from pathlib import Path
 import httpx
 
-client = LlamaStackClient(base_url="http://localhost:8321", timeout=httpx.Timeout(60.0, read=30.0))
+client = LlamaStackClient(base_url="http://localhost:8321", timeout=httpx.Timeout(120.0, read=30.0))
 
 # Pick the embed model
 embed_model = client.models.list()[0]

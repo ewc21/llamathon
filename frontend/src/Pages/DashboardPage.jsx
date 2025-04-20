@@ -22,22 +22,13 @@ const DashboardPage = () => {
     sodium: 0, // Add more micros
   });
 
-  // Function to handle submitting a log entry (will call API later)
   const handleLogSubmit = async (mealType, inputText) => {
-    console.log(`API Call Triggered for ${mealType}: ${inputText}`);
-    // --- Placeholder for API Call ---
-    // const response = await fetch('/api/chat', { // Your actual backend endpoint
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json', /* Add Auth headers if needed */ },
-    //   body: JSON.stringify({ prompt: inputText }),
-    // });
-    // if (!response.ok) {
-    //   console.error("API Error:", response.statusText);
-    //   // Handle error display to user
-    //   return;
-    // }
-    // const data = await response.json();
-    // console.log("API Response:", data);
+    try {
+      const response = await fetch("http://localhost:8000/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: inputText }),
+      });
 
     // --- Mock Response (Replace with actual data processing) ---
     // Assuming the API returns an object like: { structured_data: { meal_items: [...] } }
