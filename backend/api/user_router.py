@@ -99,6 +99,11 @@ def add_meal_item(item: MealItemCreate, db: Session = Depends(get_db)):
         "meal_item_id": new_item.id,
         "item_name": new_item.item_name
     }
+@meal_router.get("/meal-items/by-meal")
+def get_meal_items_by_meal_ids(ids: list[int] = Query(...), db: Session = Depends(get_db)):
+    items = db.query(MealItem).filter(MealItem.meal_id.in_(ids)).all()
+    results = [{col.name: getattr(item, col.name) for col in item.__table__.columns} for item in items]
+    return {"meal_items": results}
 
 @meal_router.post("/meals/")
 def create_meal(meal_data: MealCreate, db: Session = Depends(get_db)):
