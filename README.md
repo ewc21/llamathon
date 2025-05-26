@@ -12,7 +12,7 @@ To enhance performance and reduce latency, the underlying model has since been u
 
 ## Technology Stack
 
-- Frontend: React / React Native
+- Frontend: React
 - Backend: FastAPI with integrated RAG pipeline
 - AI Models: Gemini 2.0 Flash
 - Database: Prisma with PostgreSQL
