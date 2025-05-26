@@ -31,7 +31,7 @@ const LoginPage = () => {
 
   return (
     <div className="auth-container">
-      <h1 className="title">LlamaNutrition</h1>
+      <h1 className="title">GemiNutrition</h1>
       <img src={LlamaLogo} alt="Llama Logo" className="llama-logo" />
       <form className="auth-form" onSubmit={handleLogin}>
         <input

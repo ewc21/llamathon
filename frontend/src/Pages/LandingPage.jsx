@@ -7,7 +7,7 @@ const LandingPage = () => {
   const navigate = useNavigate();
   return (
     <div className="landing-container">
-      <h1 className="title">LlamaNutrition</h1>
+      <h1 className="title">GemiNutrition</h1>
       <img src={LlamaLogo} alt="Llama Logo" className="llama-logo" />
       <div className="button-group">
         <button className="action-button" onClick={() => navigate("/login")}>
