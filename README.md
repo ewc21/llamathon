@@ -12,7 +12,7 @@ To enhance performance and reduce latency, the underlying model has since been u
 
 ## Technology Stack
 
-Frontend: React / React Native
-Backend: FastAPI with integrated RAG pipeline
-AI Models: Llama 3.3 (initial release), now upgraded to Gemini 2.0 Flash
-Database: Prisma with PostgreSQL
+- Frontend: React / React Native
+- Backend: FastAPI with integrated RAG pipeline
+- AI Models: Llama 3.3 (initial release), now upgraded to Gemini 2.0 Flash
+- Database: Prisma with PostgreSQL
