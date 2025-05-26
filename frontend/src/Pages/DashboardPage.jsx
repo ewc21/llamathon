@@ -30,44 +30,27 @@ const DashboardPage = () => {
         body: JSON.stringify({ prompt: inputText }),
       });
 
-    // --- Mock Response (Replace with actual data processing) ---
-    // Assuming the API returns an object like: { structured_data: { meal_items: [...] } }
-    const mockApiResponse = {
-      structured_data: {
-        meal_items: [
-          {
-            name: `${inputText} (parsed)`,
-            quantity: "1 serving",
-            calories: Math.floor(Math.random() * 300) + 50,
-            protein: Math.floor(Math.random() * 20) + 5,
-            carbohydrates: Math.floor(Math.random() * 40) + 10,
-            fat: Math.floor(Math.random() * 15) + 3,
-            fiber: Math.floor(Math.random() * 5),
-            sodium: Math.floor(Math.random() * 500),
-          },
-          // The API might return multiple items from one prompt
-        ],
-      },
-    };
-    const newItems = mockApiResponse.structured_data.meal_items;
-    // --- End Mock Response ---
+      const data = await response.json();
+      const newItems = data.response?.meal_items || [];
 
-    // Update the correct meal state
-    switch (mealType) {
-      case "breakfast":
-        setBreakfastItems((prev) => [...prev, ...newItems]);
-        break;
-      case "lunch":
-        setLunchItems((prev) => [...prev, ...newItems]);
-        break;
-      case "dinner":
-        setDinnerItems((prev) => [...prev, ...newItems]);
-        break;
-      case "snacks":
-        setSnackItems((prev) => [...prev, ...newItems]);
-        break;
-      default:
-        console.error("Unknown meal type:", mealType);
+      switch (mealType) {
+        case "breakfast":
+          setBreakfastItems((prev) => [...prev, ...newItems]);
+          break;
+        case "lunch":
+          setLunchItems((prev) => [...prev, ...newItems]);
+          break;
+        case "dinner":
+          setDinnerItems((prev) => [...prev, ...newItems]);
+          break;
+        case "snacks":
+          setSnackItems((prev) => [...prev, ...newItems]);
+          break;
+        default:
+          console.error("Unknown meal type:", mealType);
+      }
+    } catch (error) {
+      console.error("Failed to log meal:", error);
     }
   };
 

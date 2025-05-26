@@ -11,4 +11,5 @@ class UserCreate(BaseModel):
     multiplier: str
     name: str
     age: int
-    
+class LlamaModel(BaseModel):
+    prompt: str
